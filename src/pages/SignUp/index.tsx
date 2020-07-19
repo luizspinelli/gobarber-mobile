@@ -18,6 +18,7 @@ import * as Yup from 'yup';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import getValidationErrors from '../../utils/getValidationErrors';
+import api from '../../services/api';
 
 import logoImg from '../../assets/logo.png';
 
@@ -56,30 +57,18 @@ const SignUp: React.FC = () => {
         abortEarly: false,
       });
 
-      // await api.post('/users', data);
+      await api.post('/users', data);
 
-      // history.push('/');
+      navigation.goBack();
 
       Alert.alert('Cadastro realizado', 'Você ja pode fazer o seu logon');
-
-      // addToast({
-      //   title: 'Cadastro realizado',
-      //   description: 'Você ja pode fazer o seu logon',
-      //   type: 'success',
-      // });
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         formRef.current?.setErrors(getValidationErrors(error));
         return;
       }
 
-      Alert.alert('Erro ao realizar cadastro', 'Verifique os erros indicados');
-
-      // addToast({
-      //   title: 'Erro ao realizar cadastro',
-      //   description: 'Verifique os erros indicados',
-      //   type: 'error',
-      // });
+      Alert.alert('Erro ao realizar cadastro', 'Tente novamente');
     }
   }, []);
 

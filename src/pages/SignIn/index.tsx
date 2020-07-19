@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable @typescript-eslint/ban-types */
 import React, { useCallback, useRef } from 'react';
