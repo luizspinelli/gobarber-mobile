@@ -1,16 +1,24 @@
-import React from 'react';
+/* eslint-disable no-unused-expressions */
+/* eslint-disable @typescript-eslint/ban-types */
+import React, { useCallback, useRef } from 'react';
 import {
   Image,
   View,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  TextInput,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
+import { Form } from '@unform/mobile';
+import { FormHandles } from '@unform/core';
+import * as Yup from 'yup';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import getValidationErrors from '../../utils/getValidationErrors';
 
 import logoImg from '../../assets/logo.png';
 
@@ -23,8 +31,47 @@ import {
   CreateAccountButtonText,
 } from './styles';
 
+interface SignInForm {
+  email: string;
+  password: string;
+}
+
 const SignIn: React.FC = () => {
+  const formRef = useRef<FormHandles>(null);
+  const passwordInputRef = useRef<TextInput>(null);
   const navigation = useNavigation();
+
+  const handleSubmit = useCallback(async (data: SignInForm) => {
+    try {
+      formRef.current?.setErrors({});
+      const schema = Yup.object().shape({
+        email: Yup.string()
+          .required('Email Obrigatório')
+          .email('Digite um email valido'),
+        password: Yup.string().required('Senha Obrigatório'),
+      });
+
+      await schema.validate(data, {
+        abortEarly: false,
+      });
+      // await signIn({
+      //   email: data.email,
+      //   password: data.password,
+      // });
+
+      // history.push('/dashboard');
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        formRef.current?.setErrors(getValidationErrors(error));
+        return;
+      }
+
+      Alert.alert(
+        'Erro na autenticação',
+        'Verifique a suas credenciais para fazer logon',
+      );
+    }
+  }, []);
 
   return (
     <>
@@ -43,19 +90,44 @@ const SignIn: React.FC = () => {
             <View>
               <Title>Faça o seu logon</Title>
             </View>
+            <Form onSubmit={handleSubmit} ref={formRef}>
+              <Input
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="email-address"
+                name="email"
+                icon="mail"
+                placeholder="E-mail"
+                returnKeyType="next"
+                onSubmitEditing={() => {
+                  passwordInputRef.current?.focus();
+                }}
+              />
+              <Input
+                ref={passwordInputRef}
+                secureTextEntry
+                name="password"
+                icon="lock"
+                placeholder="Senha"
+                returnKeyType="send"
+                onSubmitEditing={() => {
+                  formRef.current?.submitForm();
+                }}
+              />
+              <Button
+                onPress={() => {
+                  formRef.current?.submitForm();
+                }}
+              >
+                Entrar
+              </Button>
+            </Form>
 
-            <Input name="email" icon="mail" placeholder="E-mail" />
-            <Input name="password" icon="lock" placeholder="Senha" />
-
-            <Button
+            <ForgotPassword
               onPress={() => {
                 console.log('ok');
               }}
             >
-              Entrar
-            </Button>
-
-            <ForgotPassword onPress={() => {}}>
               <ForgotPasswordText>Esqueci minha senha</ForgotPasswordText>
             </ForgotPassword>
           </Container>

@@ -26,7 +26,7 @@ export const ForgotPasswordText = Styled.Text`
 
   color: #f4ede8;
   font-size: 16px;
-  font-family: 'RobotoSlab-Regular'
+  font-family: 'RobotoSlab-Regular';
 
 `;
 
@@ -52,6 +52,6 @@ export const BackToSignInButtonText = Styled.Text`
   margin-left: 16px;
   color: #fff;
   font-size: 18px;
-  font-family: 'RobotoSlab-Regular'
+  font-family: 'RobotoSlab-Regular';
 
 `;
