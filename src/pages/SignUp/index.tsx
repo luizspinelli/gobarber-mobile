@@ -42,35 +42,38 @@ const SignUp: React.FC = () => {
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);
 
-  const handleSubmit = useCallback(async (data: SignUpFormData) => {
-    try {
-      formRef.current?.setErrors({});
-      const schema = Yup.object().shape({
-        name: Yup.string().required('Nome obrigatório'),
-        email: Yup.string()
-          .required('Email Obrigatório')
-          .email('Digite um email valido'),
-        password: Yup.string().min(6, 'No mínimo 6 dígitos'),
-      });
+  const handleSubmit = useCallback(
+    async (data: SignUpFormData) => {
+      try {
+        formRef.current?.setErrors({});
+        const schema = Yup.object().shape({
+          name: Yup.string().required('Nome obrigatório'),
+          email: Yup.string()
+            .required('Email Obrigatório')
+            .email('Digite um email valido'),
+          password: Yup.string().min(6, 'No mínimo 6 dígitos'),
+        });
 
-      await schema.validate(data, {
-        abortEarly: false,
-      });
+        await schema.validate(data, {
+          abortEarly: false,
+        });
 
-      await api.post('/users', data);
+        await api.post('/users', data);
 
-      navigation.goBack();
+        navigation.goBack();
 
-      Alert.alert('Cadastro realizado', 'Você ja pode fazer o seu logon');
-    } catch (error) {
-      if (error instanceof Yup.ValidationError) {
-        formRef.current?.setErrors(getValidationErrors(error));
-        return;
+        Alert.alert('Cadastro realizado', 'Você ja pode fazer o seu logon');
+      } catch (error) {
+        if (error instanceof Yup.ValidationError) {
+          formRef.current?.setErrors(getValidationErrors(error));
+          return;
+        }
+
+        Alert.alert('Erro ao realizar cadastro', 'Tente novamente');
       }
-
-      Alert.alert('Erro ao realizar cadastro', 'Tente novamente');
-    }
-  }, []);
+    },
+    [navigation],
+  );
 
   return (
     <>
