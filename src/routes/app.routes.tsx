@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import AppointmentCreate from 'src/pages/AppointmentCreate';
+import AppointmentCreate from '../pages/AppointmentCreate';
 import Profile from '../pages/Profile';
 import Dashboard from '../pages/Dashboard';
 import CreateAppointment from '../pages/CreateAppointment';
