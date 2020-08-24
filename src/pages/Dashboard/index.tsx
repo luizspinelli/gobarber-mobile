@@ -1,5 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Feather';
 import { useAuth } from '../../hooks/auth';
 
 import {
@@ -9,16 +10,48 @@ import {
   UserName,
   ProfileButton,
   UserAvatar,
+  ProvidersList,
+  ProvidersListTitle,
+  ProviderContainer,
+  ProviderAvatar,
+  ProviderInfo,
+  ProviderName,
+  ProviderMeta,
+  ProviderMetaText,
 } from './styles';
+import api from '../../services/api';
+
+export interface Provider {
+  id: string;
+  name: string;
+  avatar_url: string;
+}
 
 const Dashboard: React.FC = () => {
+  const [providers, setProviders] = useState<Provider[]>([]);
   const { signOut, user } = useAuth();
+
+  console.log(providers);
 
   const { navigate } = useNavigation();
 
   const navigateToProfile = useCallback(() => {
-    navigate('Profile');
-  }, [navigate]);
+    // navigate('Profile');
+    signOut();
+  }, [signOut]);
+
+  const navigateToCreateAppointment = useCallback(
+    (provider_id: string) => {
+      navigate('CreateAppointment', provider_id);
+    },
+    [navigate],
+  );
+
+  useEffect(() => {
+    api.get('/providers').then(response => {
+      setProviders(response.data);
+    });
+  }, []);
 
   return (
     <Container>
@@ -32,6 +65,33 @@ const Dashboard: React.FC = () => {
           <UserAvatar source={{ uri: user.avatar_url }} />
         </ProfileButton>
       </Header>
+      <ProvidersList
+        keyExtractor={provider => provider.id}
+        ListHeaderComponent={
+          <ProvidersListTitle>Cabeleireiros</ProvidersListTitle>
+        }
+        data={providers}
+        renderItem={({ item: provider }) => (
+          <ProviderContainer
+            onPress={() => {
+              navigateToCreateAppointment(provider.id);
+            }}
+          >
+            <ProviderAvatar source={{ uri: provider.avatar_url }} />
+            <ProviderInfo>
+              <ProviderName>{provider.name}</ProviderName>
+              <ProviderMeta>
+                <Icon name="calendar" size={14} color="#ff9000" />
+                <ProviderMetaText>Segunda à Sexta</ProviderMetaText>
+              </ProviderMeta>
+              <ProviderMeta>
+                <Icon name="clock" size={14} color="#ff9000" />
+                <ProviderMetaText>8h as 18h</ProviderMetaText>
+              </ProviderMeta>
+            </ProviderInfo>
+          </ProviderContainer>
+        )}
+      />
     </Container>
   );
 };
