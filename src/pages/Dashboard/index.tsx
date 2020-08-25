@@ -31,8 +31,6 @@ const Dashboard: React.FC = () => {
   const [providers, setProviders] = useState<Provider[]>([]);
   const { signOut, user } = useAuth();
 
-  console.log(providers);
-
   const { navigate } = useNavigation();
 
   const navigateToProfile = useCallback(() => {
@@ -41,8 +39,8 @@ const Dashboard: React.FC = () => {
   }, [signOut]);
 
   const navigateToCreateAppointment = useCallback(
-    (provider_id: string) => {
-      navigate('CreateAppointment', provider_id);
+    (providerId: string) => {
+      navigate('CreateAppointment', { providerId });
     },
     [navigate],
   );
@@ -73,6 +71,7 @@ const Dashboard: React.FC = () => {
         data={providers}
         renderItem={({ item: provider }) => (
           <ProviderContainer
+            key={provider.id}
             onPress={() => {
               navigateToCreateAppointment(provider.id);
             }}
